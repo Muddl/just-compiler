@@ -36,7 +36,7 @@ pub enum Operator {
     LessEq, Less,
     GreatEq, Great,
     Add, Sub, Mul, Div,
-    PlusEq, SubEq, MulEq, DivEq,
+    LOr, LAnd, LNot
 }
 
 impl fmt::Display for Operator {
@@ -53,10 +53,9 @@ impl fmt::Display for Operator {
             Operator::Sub => write!(f, "SUB_OP"),
             Operator::Mul => write!(f, "MUL_OP"),
             Operator::Div => write!(f, "DIV_OP"),
-            Operator::PlusEq => write!(f, "PLUS_EQ_OP"),
-            Operator::SubEq => write!(f, "SUB_EQ_OP"),
-            Operator::MulEq => write!(f, "MUL_EQ_OP"),
-            Operator::DivEq => write!(f, "DIV_EQ_OP"),
+            Operator::LOr => write!(f, "LOr"),
+            Operator::LAnd => write!(f, "LAnd"),
+            Operator::LNot => write!(f, "LNot"),
         }
     }
 }

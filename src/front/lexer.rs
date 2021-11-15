@@ -182,10 +182,9 @@ fn parse_operator(s: &str) -> Option<Operator> {
         "==" => Operator::Eq,
         "!=" => Operator::NotEq,
         "=" => Operator::Assign,
-        "+=" => Operator::PlusEq,
-        "-=" => Operator::SubEq,
-        "*=" => Operator::MulEq,
-        "/=" => Operator::DivEq,
+        "&&" => Operator::LAnd,
+        "||" => Operator::LOr,
+        "!" => Operator::LNot
     };
     OPERATORS.get(s).cloned()
 }
@@ -193,9 +192,9 @@ fn parse_operator(s: &str) -> Option<Operator> {
 /// Parses delimiter from the specific string.
 fn parse_delimiter(s: &str) -> Option<Delimiter> {
     static DELIMITERS: phf::Map<&'static str, Delimiter> = phf_map! {
-        "()" => Delimiter::ParenPair,
         "(" => Delimiter::OpenParen,
         ")" => Delimiter::CloseParen,
+        "()" => Delimiter::ParenPair,
     };
     DELIMITERS.get(s).cloned()
 }
