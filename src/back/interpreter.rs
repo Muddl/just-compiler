@@ -113,6 +113,10 @@ impl InterpreterImpl {
 impl AstVisitor for InterpreterImpl {
     type Result = Result;
 
+    fn visit(&mut self, ast: &AstBox) -> Self::Result {
+        todo!()
+    }
+
     fn visit_function(&mut self, _name: &String, _args: &[String], body: &AstBox) -> Self::Result {
         // Set up the default return value
         let ret = self.envs.add(RET_VAL.clone(), 0);
@@ -214,7 +218,7 @@ impl AstVisitor for InterpreterImpl {
         }
     }
 
-    fn visit_funcall(&mut self, name: &String, args: &[AstBox]) -> Self::Result {
+    fn visit_func_call(&mut self, name: &String, args: &[AstBox]) -> Self::Result {
         // Handle library function call
         if let Some(ret) = self.call_lib_func(name, args)? {
             return Ok(ret);
@@ -257,5 +261,9 @@ impl AstVisitor for InterpreterImpl {
             .envs
             .get_rec(val)
             .map_or(Err("Symbol has not been defined"), |v| Ok(*v))
+    }
+
+    fn visit_end(&mut self, val: &String) -> Self::Result {
+        todo!()
     }
 }

@@ -59,6 +59,10 @@ pub enum Ast {
 
     Id {
         id: String,
+    },
+
+    End {
+        val: String,
     }
 }
 
@@ -79,9 +83,10 @@ pub trait AstVisitor {
             While { do_this, while_case } => self.visit_while(do_this, while_case),
             Binary { op, lhs, rhs } => self.visit_binary(op, lhs, rhs),
             Unary { op, opr } => self.visit_unary(op, opr),
-            FunCall { name, args } => self.visit_funcall(name, args),
+            FunCall { name, args } => self.visit_func_call(name, args),
             Int { val } => self.visit_int(val),
             Id { id } => self.visit_id(id),
+            End { val } => self.visit_end(val)
         }
     }
 
@@ -93,8 +98,9 @@ pub trait AstVisitor {
     fn visit_while(&mut self, do_this: &AstBox, while_case: &AstBox) -> Self::Result;
     fn visit_unary(&mut self, op: &Operator, opr: &AstBox) -> Self::Result;
     fn visit_binary(&mut self, op: &Operator, lhs: &AstBox, rhs: &AstBox) -> Self::Result;
-    fn visit_funcall(&mut self, name: &String, args: &[AstBox]) -> Self::Result;
+    fn visit_func_call(&mut self, name: &String, args: &[AstBox]) -> Self::Result;
     fn visit_int(&mut self, val: &i32) -> Self::Result;
     fn visit_id(&mut self, val: &String) -> Self::Result;
+    fn visit_end(&mut self, val: &String) -> Self::Result;
 }
 

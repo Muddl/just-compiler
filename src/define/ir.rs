@@ -13,7 +13,7 @@ pub struct FunctionDef {
     slot_num: usize,
     /// Instructions
     /// `None` if is library function ('input' and 'print')
-    insts: Option<Vec<InstBox>>,
+    instructions: Option<Vec<InstBox>>,
 }
 
 /// Pointer for function definitions
@@ -94,27 +94,27 @@ impl FunctionDef {
     /// Creates a new function definition
     pub fn new(name: String, arg_num: usize) -> Self {
         Self {
-            name: name,
-            arg_num: arg_num,
+            name,
+            arg_num,
             slot_num: 0,
-            insts: Some(Vec::new()),
+            instructions: Some(Vec::new()),
         }
     }
 
     /// Creates a new library function declaration
     pub fn new_lib(name: String, arg_num: usize) -> Self {
         Self {
-            name: name,
-            arg_num: arg_num,
+            name,
+            arg_num,
             slot_num: 0,
-            insts: None,
+            instructions: None,
         }
     }
 
     /// Creates and pushes a new instruction to the current function,
     /// panics when pushing instructions to a library function declaration
     pub fn push_inst(&mut self, inst: InstBox) {
-        self.insts.as_mut().unwrap().push(inst)
+        self.instructions.as_mut().unwrap().push(inst)
     }
 
     /// Creates a new stack slot definition
@@ -145,7 +145,7 @@ impl FunctionDef {
             writeln!(writer, "  mv s{}, a{}", i, i)?;
         }
         // Dump instructions
-        for inst in self.insts.as_ref().unwrap() {
+        for inst in self.instructions.as_ref().unwrap() {
             dump_inst(writer, inst, self)?;
         }
         writeln!(writer, "")
@@ -158,7 +158,7 @@ impl FunctionDef {
 
     /// Checks if is a library function declaration
     pub fn is_lib(&self) -> bool {
-        self.insts.is_none()
+        self.instructions.is_none()
     }
 
     /// Gets the slot offset

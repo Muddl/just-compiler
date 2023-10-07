@@ -6,5 +6,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-phf = { version = "0.10.0", features = ["macros"] }
+phf = { version = "0.11.1", features = ["macros"] }
 lazy_static = "1.4.0"

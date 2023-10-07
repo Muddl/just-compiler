@@ -15,7 +15,7 @@ impl<T: Read> Lexer<T> {
     /// Creates a new `Lexer` object from the specific `Read` object.
     pub fn new(reader: T) -> Self {
         Self {
-            reader: reader,
+            reader,
             last_char: Some(' '),
         }
     }

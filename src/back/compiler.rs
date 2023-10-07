@@ -74,6 +74,10 @@ impl Generator {
 impl AstVisitor for Generator {
     type Result = Result;
 
+    fn visit(&mut self, ast: &AstBox) -> Self::Result {
+        todo!()
+    }
+
     fn visit_function(&mut self, name: &String, args: &[String], body: &AstBox) -> Self::Result {
         // Check argument count
         (args.len() <= 8)
@@ -136,7 +140,7 @@ impl AstVisitor for Generator {
         let end_if = else_then.is_some().then(|| self.new_label());
         // Generate conditional branch
         let branch = Box::new(Inst::BranchEqz {
-            cond: cond,
+            cond,
             label: false_branch.clone(),
         });
         self.func().push_inst(branch);
@@ -167,6 +171,19 @@ impl AstVisitor for Generator {
 
     fn visit_while(&mut self, do_this: &AstBox, while_case: &AstBox) -> Self::Result {
         Ok(None)
+    }
+
+    fn visit_unary(&mut self, op: &Operator, opr: &AstBox) -> Self::Result {
+        // Generate operand
+        let opr = self.visit(opr)?.unwrap();
+        // Generate unary operation
+        let dest = self.func().add_slot();
+        self.func().push_inst(Box::new(Inst::Unary {
+            dest: dest.clone(),
+            op: op.clone(),
+            opr,
+        }));
+        Ok(Some(dest))
     }
 
     fn visit_binary(&mut self, op: &Operator, lhs: &AstBox, rhs: &AstBox) -> Self::Result {
@@ -208,27 +225,14 @@ impl AstVisitor for Generator {
                 self.func().push_inst(Box::new(Inst::Binary {
                     dest: dest.clone(),
                     op: op.clone(),
-                    lhs: lhs,
-                    rhs: rhs,
+                    lhs,
+                    rhs,
             }));
             Ok(Some(dest))
         }
     }
 
-    fn visit_unary(&mut self, op: &Operator, opr: &AstBox) -> Self::Result {
-        // Generate operand
-        let opr = self.visit(opr)?.unwrap();
-        // Generate unary operation
-        let dest = self.func().add_slot();
-        self.func().push_inst(Box::new(Inst::Unary {
-            dest: dest.clone(),
-            op: op.clone(),
-            opr: opr,
-        }));
-        Ok(Some(dest))
-    }
-
-    fn visit_funcall(&mut self, name: &String, args: &[AstBox]) -> Self::Result {
+    fn visit_func_call(&mut self, name: &String, args: &[AstBox]) -> Self::Result {
         // Get the function definition
         let func = self.funcs.get(name).ok_or("function not found")?.clone();
         // Check argument count
@@ -263,5 +267,9 @@ impl AstVisitor for Generator {
                 .ok_or("Symbol has not been defined")?
                 .clone(),
         ))
+    }
+
+    fn visit_end(&mut self, val: &String) -> Self::Result {
+        todo!()
     }
 }

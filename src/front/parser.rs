@@ -25,7 +25,7 @@ impl<T:Read> Parser<T> {
     /// Creates a new `Parser` object from the specific `Lexer`
     pub fn new(lexer: Lexer<T>) -> Self {
         let mut parser = Self {
-            lexer: lexer,
+            lexer,
             cur_token: Ok(Token::End),
         };
         parser.next_token();
@@ -72,9 +72,9 @@ impl<T:Read> Parser<T> {
         // Get function body
         self.parse_block().map(|body| {
             Box::new(Ast::Function {
-                name: name,
-                args: args,
-                body: body,
+                name,
+                args,
+                body,
             })
         })
     }
@@ -86,7 +86,7 @@ impl<T:Read> Parser<T> {
         while !self.is_token_key(Keyword::End) {
             stmts.push(self.parse_statement()?);
         }
-        Ok(Box::new(Ast::Block { stmts: stmts }))
+        Ok(Box::new(Ast::Block { stmts }))
     }
 
     /// Parse statements
@@ -112,7 +112,7 @@ impl<T:Read> Parser<T> {
         self.next_token();
         // Check if is a function call
         if self.is_token_char('(') {
-            return self.parse_funcall(id);
+            return self.parse_func_call(id);
         }
         // Check if is assign
         if !self.is_token_op(Operator::Assign) {
@@ -123,7 +123,7 @@ impl<T:Read> Parser<T> {
         self.parse_expr().map(|expr| {
             Box::new(Ast::Assign {
                 name: id,
-                expr: expr,
+                expr,
             })
         })
     }
@@ -138,8 +138,8 @@ impl<T:Read> Parser<T> {
         let then = self.parse_block()?;
         // Check & get 'else-then' body
         Ok(Box::new(Ast::If {
-            cond: cond,
-            then: then,
+            cond,
+            then,
             else_then: if self.is_token_key(Keyword::Else) {
                 // Eat 'else'
                 self.next_token();
@@ -165,7 +165,7 @@ impl<T:Read> Parser<T> {
         let do_this = self.parse_block()?;
         // Check loop condition and follow through if so
         Ok(Box::new(Ast::While {
-            do_this: do_this,
+            do_this,
             while_case: cond,
         }))
     }
@@ -180,7 +180,7 @@ impl<T:Read> Parser<T> {
         let cond = self.parse_expr()?;
         // Check loop condition and follow through if so
         Ok(Box::new(Ast::Repeat {
-            do_this: do_this,
+            do_this,
             until: cond,
         }))
     }
@@ -206,7 +206,7 @@ impl<T:Read> Parser<T> {
     fn parse_end(&mut self) -> Result {
         // Eat 'end'
         self.next_token();
-        Ok(Box::new(Ast::End))
+        Ok(AstBox::new(Ast::End { val: "".to_string() }))
     }
 
     /// Parses expression
@@ -281,7 +281,7 @@ impl<T:Read> Parser<T> {
                 self.next_token();
                 // Check if is a function call
                 if self.is_token_char('(') {
-                    self.parse_funcall(id)
+                    self.parse_func_call(id)
                 } else {
                     Ok(Box::new(Ast::Id { id: id }))
                 }
@@ -300,7 +300,7 @@ impl<T:Read> Parser<T> {
     }
 
     /// Parses function calls.
-    fn parse_funcall(&mut self, id: String) -> Result {
+    fn parse_func_call(&mut self, id: String) -> Result {
         // Eat '('
         self.next_token();
         // Get arguments
@@ -320,7 +320,7 @@ impl<T:Read> Parser<T> {
         self.expect_char(')')?;
         Ok(Box::new(Ast::FunCall {
             name: id.to_string(),
-            args: args,
+            args,
         }))
     }
 

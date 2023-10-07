@@ -10,7 +10,7 @@ macro_rules! unwrap_enum {
     };
 }
 
-/// Unwraps a struture
+/// Unwraps a structure
 #[macro_export]
 macro_rules! unwrap_struct {
     ($v:expr, $p:path, $($t:tt),*) => {
